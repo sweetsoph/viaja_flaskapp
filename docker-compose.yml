@@ -1,8 +1,25 @@
-version: '3.8'
 services:
-  web:
+  api:
     build: .
     ports:
       - "5000:5000"
     volumes:
       - .:/app
+    environment:
+      - FLASK_DEBUG=1
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    command: flask run --host=0.0.0.0 --debug
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: always
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_API_TOKEN}
+    command:
+      - http
+      - api:5000
+    ports:
+      - "4040:4040"
+    depends_on:
+      - api
